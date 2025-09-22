@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'screens/sitemap_home_screen.dart';
 import 'screens/url_input_screen.dart';
+import 'screens/welcome_screen.dart';
 
 void main() {
   runApp(const SitemapApp());
@@ -19,7 +20,7 @@ class SitemapApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const UrlInputScreen(),
+      home: const WelcomeScreen(),
       routes: {
         '/sitemap': (context) {
           final args = ModalRoute.of(context)?.settings.arguments as String?;
