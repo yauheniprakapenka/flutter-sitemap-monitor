@@ -15,8 +15,10 @@ class UrlFilter {
         return urls.where((url) => url.statusCode != null && url.statusCode! >= 400 && url.statusCode! < 500).toList();
       case 5: // 5xx - Ошибки сервера
         return urls.where((url) => url.statusCode != null && url.statusCode! >= 500 && url.statusCode! < 600).toList();
-      case 6: // Остальное (null, нестандартные коды)
-        return urls.where((url) => url.statusCode == null || url.statusCode! < 100 || url.statusCode! >= 600).toList();
+      case 6: // Ошибки подключения (990-999)
+        return urls.where((url) => url.statusCode != null && url.statusCode! >= 990 && url.statusCode! < 1000).toList();
+      case 7: // Остальное (null, нестандартные коды)
+        return urls.where((url) => url.statusCode == null || url.statusCode! < 100 || (url.statusCode! >= 600 && url.statusCode! < 990) || url.statusCode! >= 1000).toList();
       default:
         return urls;
     }
@@ -37,6 +39,8 @@ class UrlFilter {
       case 5:
         return '5xx';
       case 6:
+        return 'Ошибки подключения';
+      case 7:
         return 'Остальное';
       default:
         return 'Все';

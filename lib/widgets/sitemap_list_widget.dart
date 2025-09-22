@@ -37,7 +37,21 @@ class SitemapListWidget extends StatelessWidget {
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: ListTile(
-            leading: const Icon(Icons.link, size: 20, color: Colors.blue),
+            leading: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: _getStatusCodeColor(url.statusCode!),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                '${url.statusCode}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             title: Text(
               url.location,
               style: const TextStyle(
@@ -50,50 +64,11 @@ class SitemapListWidget extends StatelessWidget {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    if (url.statusCode != null) ...[
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: _getStatusCodeColor(url.statusCode!),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          '${url.statusCode}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                    Expanded(
-                      child: Text(
-                        url.location,
-                        style: const TextStyle(fontSize: 12),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
                 if (url.lastModified != null)
                   Text(
                     'Последнее изменение: ${_formatDate(url.lastModified!)}',
                     style: const TextStyle(fontSize: 11),
                   ),
-                const SizedBox(height: 2),
-                Text(
-                  'Нажмите для копирования • Долгое нажатие для деталей',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey.shade600,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
               ],
             ),
             isThreeLine: true,
@@ -151,8 +126,10 @@ class SitemapListWidget extends StatelessWidget {
       return Colors.orange; // Перенаправления
     } else if (statusCode >= 400 && statusCode < 500) {
       return Colors.red; // Ошибки клиента
-    } else if (statusCode >= 500) {
+    } else if (statusCode >= 500 && statusCode < 600) {
       return Colors.red.shade800; // Ошибки сервера
+    } else if (statusCode >= 990 && statusCode < 1000) {
+      return Colors.purple; // Ошибки подключения
     } else {
       return Colors.grey; // Неизвестные коды
     }
@@ -186,6 +163,25 @@ class SitemapListWidget extends StatelessWidget {
         return 'Bad Gateway';
       case 503:
         return 'Service Unavailable';
+      // Коды ошибок подключения
+      case 991:
+        return 'Другая ошибка';
+      case 992:
+        return 'Неизвестная ошибка';
+      case 993:
+        return 'Запрос отменен';
+      case 994:
+        return 'Ошибка ответа сервера';
+      case 995:
+        return 'Ошибка подключения';
+      case 996:
+        return 'Таймаут получения';
+      case 997:
+        return 'Таймаут отправки';
+      case 998:
+        return 'Таймаут подключения';
+      case 999:
+        return 'Неизвестная ошибка';
       default:
         if (statusCode >= 200 && statusCode < 300) {
           return 'Success';
@@ -193,8 +189,10 @@ class SitemapListWidget extends StatelessWidget {
           return 'Redirect';
         } else if (statusCode >= 400 && statusCode < 500) {
           return 'Client Error';
-        } else if (statusCode >= 500) {
+        } else if (statusCode >= 500 && statusCode < 600) {
           return 'Server Error';
+        } else if (statusCode >= 990 && statusCode < 1000) {
+          return 'Connection Error';
         } else {
           return 'Unknown';
         }

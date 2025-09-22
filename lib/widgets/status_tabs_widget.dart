@@ -8,14 +8,12 @@ class StatusTabsWidget extends StatefulWidget {
   final List<SitemapUrl> urls;
   final int selectedIndex;
   final Function(int) onTabChanged;
-  final bool isLoading;
 
   const StatusTabsWidget({
     super.key,
     required this.urls,
     required this.selectedIndex,
     required this.onTabChanged,
-    this.isLoading = false,
   });
 
   @override
@@ -103,8 +101,6 @@ class _StatusTabsWidgetState extends State<StatusTabsWidget> with TickerProvider
             ),
           )).toList(),
         ),
-        if (widget.isLoading)
-          const LinearProgressIndicator(),
       ],
     );
   }
@@ -116,7 +112,8 @@ class _StatusTabsWidgetState extends State<StatusTabsWidget> with TickerProvider
     final redirectCount = widget.urls.where((url) => url.statusCode != null && url.statusCode! >= 300 && url.statusCode! < 400).length;
     final clientErrorCount = widget.urls.where((url) => url.statusCode != null && url.statusCode! >= 400 && url.statusCode! < 500).length;
     final serverErrorCount = widget.urls.where((url) => url.statusCode != null && url.statusCode! >= 500 && url.statusCode! < 600).length;
-    final otherCount = widget.urls.where((url) => url.statusCode == null || url.statusCode! < 100 || url.statusCode! >= 600).length;
+    final connectionErrorCount = widget.urls.where((url) => url.statusCode != null && url.statusCode! >= 990 && url.statusCode! < 1000).length;
+    final otherCount = widget.urls.where((url) => url.statusCode == null || url.statusCode! < 100 || (url.statusCode! >= 600 && url.statusCode! < 990) || url.statusCode! >= 1000).length;
 
     return [
       StatusTab(
@@ -154,6 +151,12 @@ class _StatusTabsWidgetState extends State<StatusTabsWidget> with TickerProvider
         count: serverErrorCount,
         color: Colors.red.shade800,
         icon: Icons.error_outline,
+      ),
+      StatusTab(
+        label: 'Ошибки подключения',
+        count: connectionErrorCount,
+        color: Colors.purple,
+        icon: Icons.wifi_off,
       ),
       StatusTab(
         label: 'Остальное',

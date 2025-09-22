@@ -18,8 +18,13 @@ class UrlChecker {
         ),
       );
       return response.statusCode;
-    } on Exception {
-      // Если HEAD запрос не поддерживается, пробуем GET
+    } on DioException catch (e) {
+      // Если это badResponse (404, 500 и т.д.), возвращаем реальный статус-код
+      if (e.type == DioExceptionType.badResponse && e.response?.statusCode != null) {
+        return e.response!.statusCode!;
+      }
+
+      // Для других ошибок (connectionError, timeout и т.д.) пробуем GET
       try {
         final response = await _dio.get(
           url,
@@ -29,9 +34,38 @@ class UrlChecker {
           ),
         );
         return response.statusCode;
-      } on Exception {
-        return null; // Ошибка при запросе
+      } on DioException catch (getError) {
+        // Если GET тоже badResponse, возвращаем реальный статус-код
+        if (getError.type == DioExceptionType.badResponse && getError.response?.statusCode != null) {
+          return getError.response!.statusCode!;
+        }
+        // Для других ошибок возвращаем специальные коды
+        return _getErrorStatusCode(getError);
       }
+    } on Exception {
+      return 999; // Неизвестная ошибка
+    }
+  }
+
+  static int _getErrorStatusCode(DioException error) {
+    switch (error.type) {
+      case DioExceptionType.connectionTimeout:
+        return 998; // Таймаут подключения
+      case DioExceptionType.sendTimeout:
+        return 997; // Таймаут отправки
+      case DioExceptionType.receiveTimeout:
+        return 996; // Таймаут получения
+      case DioExceptionType.connectionError:
+        return 995; // Ошибка подключения
+      case DioExceptionType.cancel:
+        return 993; // Запрос отменен
+      case DioExceptionType.unknown:
+        return 992; // Неизвестная ошибка
+      case DioExceptionType.badResponse:
+        // Этот случай не должен сюда попадать, так как мы обрабатываем badResponse отдельно
+        return 994; // Ошибка ответа сервера
+      default:
+        return 991; // Другая ошибка
     }
   }
 
