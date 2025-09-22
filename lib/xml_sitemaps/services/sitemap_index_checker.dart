@@ -1,7 +1,7 @@
+import '../../url_pages/models/sitemap_url.dart';
+import '../../url_pages/services/url_checker.dart';
 import '../models/sitemap_index_report.dart';
 import '../models/sitemap_index_result.dart';
-import '../models/sitemap_url.dart';
-import 'url_checker.dart';
 
 class SitemapIndexChecker {
   /// Проверяет статус всех страниц из результатов sitemap index

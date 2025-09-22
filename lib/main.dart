@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'screens/sitemap_home_screen.dart';
-import 'screens/url_input_screen.dart';
-import 'screens/welcome_screen.dart';
+import 'shared/screens/welcome_screen.dart';
+import 'url_pages/screens/sitemap_home_screen.dart';
+import 'url_pages/screens/url_input_screen.dart';
 
 void main() {
   runApp(const SitemapApp());

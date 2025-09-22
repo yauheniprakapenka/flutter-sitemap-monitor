@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-import 'sitemap_index_input_screen.dart';
-import 'url_input_screen.dart';
+import '../../url_pages/screens/url_input_screen.dart';
+import '../../xml_sitemaps/screens/sitemap_index_input_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../url_pages/models/sitemap_url.dart';
 import '../models/sitemap_index_report.dart';
-import '../models/sitemap_url.dart';
 
 class SitemapIndexReportScreen extends StatelessWidget {
   final SitemapIndexReport report;
@@ -352,7 +352,7 @@ class SitemapIndexReportScreen extends StatelessWidget {
         if (url.statusCode != null && (url.statusCode! >= 400 || url.statusCode! >= 990)) {
           errorUrls.add({
             'url': url,
-            'statusCode': url.statusCode!,
+            'statusCode': url.statusCode,
           });
         }
       }
@@ -394,7 +394,7 @@ class SitemapIndexReportScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.folder_open,
                     size: 16,
                     color: Colors.red,
@@ -712,7 +712,7 @@ class SitemapIndexReportScreen extends StatelessWidget {
     Clipboard.setData(ClipboardData(text: sitemapUrl));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('URL sitemap файла скопирован в буфер обмена'),
+        content: const Text('URL sitemap файла скопирован в буфер обмена'),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(

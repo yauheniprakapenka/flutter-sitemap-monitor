@@ -1,4 +1,4 @@
-import 'sitemap_url.dart';
+import '../../url_pages/models/sitemap_url.dart';
 
 class SitemapIndexReport {
   final String originalUrl;
