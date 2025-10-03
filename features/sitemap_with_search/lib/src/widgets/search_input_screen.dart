@@ -5,32 +5,60 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class UrlInputScreen extends StatefulWidget {
-  const UrlInputScreen();
+class SearchInputScreen extends StatefulWidget {
+  final String? initialUrl;
+  final String? initialSearchText;
+
+  const SearchInputScreen({
+    super.key,
+    this.initialUrl,
+    this.initialSearchText,
+  });
 
   @override
-  State<UrlInputScreen> createState() => _UrlInputScreenState();
+  State<SearchInputScreen> createState() => _SearchInputScreenState();
 }
 
-class _UrlInputScreenState extends State<UrlInputScreen> {
-  final TextEditingController _urlController = TextEditingController();
+class _SearchInputScreenState extends State<SearchInputScreen> {
+  late final TextEditingController _urlController;
+  late final TextEditingController _searchController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _urlController = TextEditingController(text: widget.initialUrl ?? '');
+    _searchController = TextEditingController(text: widget.initialSearchText ?? '');
+  }
+
+  @override
   void dispose() {
     _urlController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   String? _validateUrl(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Пожалуйста, введите URL';
+      return 'Пожалуйста, введите URL sitemap';
     }
 
     final uri = Uri.tryParse(value);
     if (uri == null || (!uri.hasScheme || (!uri.scheme.startsWith('http')))) {
       return 'Пожалуйста, введите корректный URL (начинающийся с http:// или https://)';
+    }
+
+    return null;
+  }
+
+  String? _validateSearchText(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Пожалуйста, введите текст для поиска';
+    }
+
+    if (value.trim().length < 2) {
+      return 'Текст для поиска должен содержать минимум 2 символа';
     }
 
     return null;
@@ -64,7 +92,7 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
     );
   }
 
-  Future<void> _onContinue() async {
+  Future<void> _onSearch() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _isLoading = true;
@@ -72,14 +100,25 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
 
       try {
         final url = _urlController.text.trim();
+        final searchText = _searchController.text.trim();
+
         // Небольшая задержка для демонстрации состояния загрузки
         await Future.delayed(const Duration(milliseconds: 500));
 
         if (mounted) {
-          unawaited(Navigator.of(context).pushNamed(
-            '/sitemap',
-            arguments: url,
-          ));
+          final result = await Navigator.of(context).pushNamed(
+            '/sitemap-search-results',
+            arguments: {
+              'url': url,
+              'searchText': searchText,
+            },
+          );
+
+          // Обрабатываем возврат данных
+          if (result is Map<String, String>) {
+            _urlController.text = result['url'] ?? '';
+            _searchController.text = result['searchText'] ?? '';
+          }
         }
       } finally {
         if (mounted) {
@@ -95,7 +134,7 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sitemap Monitor'),
+        title: const Text('Sitemap Search'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Padding(
@@ -107,13 +146,13 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Icon(
-                Icons.map,
+                Icons.search,
                 size: 80,
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 32),
               Text(
-                'Введите URL sitemap.xml',
+                'Поиск в sitemap',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -121,13 +160,15 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Укажите URL, содержащий sitemap.xml для анализа',
+                'Введите URL sitemap и текст для поиска в URL страниц',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.grey.shade600,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
+
+              // Поле для URL sitemap
               Row(
                 children: [
                   Expanded(
@@ -144,9 +185,8 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                           fillColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
                         ),
                         keyboardType: TextInputType.url,
-                        textInputAction: TextInputAction.done,
+                        textInputAction: TextInputAction.next,
                         validator: _validateUrl,
-                        onFieldSubmitted: (_) => _onContinue(),
                         enabled: !_isLoading,
                       ),
                     ),
@@ -170,9 +210,30 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                   ),
                 ],
               ),
+
+              const SizedBox(height: 24),
+
+              // Поле для поискового текста
+              TextFormField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Текст для поиска',
+                  hintText: 'Например: "pagen" или "product"',
+                  prefixIcon: const Icon(Icons.search),
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                ),
+                textInputAction: TextInputAction.done,
+                validator: _validateSearchText,
+                onFieldSubmitted: (_) => _onSearch(),
+                enabled: !_isLoading,
+              ),
+
               const SizedBox(height: 32),
+
               ElevatedButton(
-                onPressed: _isLoading ? null : _onContinue,
+                onPressed: _isLoading ? null : _onSearch,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -189,11 +250,13 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                         ),
                       )
                     : const Text(
-                        'Начать сканирование',
+                        'Начать поиск',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                       ),
               ),
+
               const SizedBox(height: 24),
+
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -215,7 +278,7 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Примеры URL:',
+                          'Как это работает:',
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -224,10 +287,10 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '• https://example.com/sitemap.xml\n'
-                      '• https://site.com/sitemap_index.xml\n'
-                      '• https://blog.com/sitemap.xml\n\n'
-                      '💡 Совет: Используйте кнопку вставки или длинное нажатие на поле',
+                      '• Введите URL sitemap (может быть индексом с несколькими sitemap)\n'
+                      '• Укажите текст для поиска в URL страниц\n'
+                      '• Система найдет все страницы, содержащие указанный текст\n\n'
+                      '💡 Совет: Поиск не чувствителен к регистру',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade700,
                       ),

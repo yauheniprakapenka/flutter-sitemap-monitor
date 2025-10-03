@@ -55,7 +55,7 @@ class _SitemapHomeScreenState extends State<SitemapHomeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pushReplacementNamed('/');
+            Navigator.of(context).pop();
           },
         ),
         actions: [

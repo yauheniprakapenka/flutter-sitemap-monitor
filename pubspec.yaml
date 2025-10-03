@@ -13,6 +13,8 @@ dependencies:
     path: features/sitemap_with_url
   sitemap_with_sitemap:
     path: features/sitemap_with_sitemap
+  sitemap_with_search:
+    path: features/sitemap_with_search
 
 dev_dependencies:
   flutter_lints: 5.0.0

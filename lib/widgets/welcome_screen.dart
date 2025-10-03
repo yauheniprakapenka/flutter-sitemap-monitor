@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:sitemap_with_search/sitemap_with_search.dart';
 import 'package:sitemap_with_sitemap/sitemap_with_sitemap.dart';
 import 'package:sitemap_with_url/sitemap_with_url.dart';
 
@@ -37,6 +38,18 @@ class WelcomeScreen extends StatelessWidget {
                   subtitle: 'Sitemap содержит URL на другие sitemap',
                   onTap: () => _navigateToSitemapIndexInput(context),
                   isPrimary: false,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: _buildActionCard(
+                  context: context,
+                  icon: Icons.search,
+                  title: 'Поиск в sitemap',
+                  subtitle: 'Поиск страниц по тексту в URL',
+                  onTap: () => _navigateToSearchInput(context),
+                  isPrimary: true,
                 ),
               ),
             ],
@@ -144,6 +157,14 @@ class WelcomeScreen extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const SitemapIndexInputScreen(),
+      ),
+    );
+  }
+
+  void _navigateToSearchInput(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const SearchInputScreen(),
       ),
     );
   }
