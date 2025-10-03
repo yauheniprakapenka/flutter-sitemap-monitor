@@ -5,18 +5,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../models/sitemap_index_result.dart';
-import '../services/sitemap_index_parser.dart';
-import 'sitemap_index_results_screen.dart';
-
-class SitemapIndexInputScreen extends StatefulWidget {
-  const SitemapIndexInputScreen({super.key});
+class UrlInputScreen extends StatefulWidget {
+  const UrlInputScreen();
 
   @override
-  State<SitemapIndexInputScreen> createState() => _SitemapIndexInputScreenState();
+  State<UrlInputScreen> createState() => _UrlInputScreenState();
 }
 
-class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
+class _UrlInputScreenState extends State<UrlInputScreen> {
   final TextEditingController _urlController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -76,24 +72,14 @@ class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
 
       try {
         final url = _urlController.text.trim();
+        // Небольшая задержка для демонстрации состояния загрузки
+        await Future.delayed(const Duration(milliseconds: 500));
 
         if (mounted) {
-          // Получаем и парсим sitemap index с данными страниц
-          final List<SitemapIndexResult> results = await SitemapIndexParser.parseSitemapIndexWithPages(url);
-
-          // Переходим на экран результатов
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => SitemapIndexResultsScreen(
-                results: results,
-                originalUrl: url,
-              ),
-            ),
-          );
-        }
-      } on Exception catch (e) {
-        if (mounted) {
-          _showSnackBar('Ошибка: $e');
+          unawaited(Navigator.of(context).pushReplacementNamed(
+            '/sitemap',
+            arguments: url,
+          ));
         }
       } finally {
         if (mounted) {
@@ -109,7 +95,7 @@ class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sitemap Index Monitor'),
+        title: const Text('Sitemap Monitor'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Padding(
@@ -121,13 +107,13 @@ class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Icon(
-                Icons.account_tree,
+                Icons.map,
                 size: 80,
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 32),
               Text(
-                'Введите URL sitemap index',
+                'Введите URL sitemap.xml',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -135,7 +121,7 @@ class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Укажите URL, содержащий sitemap index с вложенными sitemap файлами',
+                'Укажите URL, содержащий sitemap.xml для анализа',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.grey.shade600,
                 ),
@@ -150,8 +136,8 @@ class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
                       child: TextFormField(
                         controller: _urlController,
                         decoration: InputDecoration(
-                          labelText: 'URL sitemap index',
-                          hintText: 'https://example.com/sitemap_index.xml',
+                          labelText: 'URL sitemap.xml',
+                          hintText: 'https://example.com/sitemap.xml',
                           prefixIcon: const Icon(Icons.link),
                           border: const OutlineInputBorder(),
                           filled: true,
@@ -203,7 +189,7 @@ class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
                         ),
                       )
                     : const Text(
-                        'Начать анализ sitemap index',
+                        'Начать сканирование',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                       ),
               ),
@@ -229,7 +215,7 @@ class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Что такое sitemap index:',
+                          'Примеры URL:',
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -238,12 +224,9 @@ class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Sitemap index — это XML файл, который содержит ссылки на другие sitemap файлы. '
-                      'Используется для организации больших сайтов с множеством страниц.\n\n'
-                      'Примеры URL:\n'
-                      '• https://example.com/sitemap_index.xml\n'
-                      '• https://site.com/sitemap.xml\n'
-                      '• https://blog.com/sitemap-index.xml\n\n'
+                      '• https://example.com/sitemap.xml\n'
+                      '• https://site.com/sitemap_index.xml\n'
+                      '• https://blog.com/sitemap.xml\n\n'
                       '💡 Совет: Используйте кнопку вставки или длинное нажатие на поле',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade700,

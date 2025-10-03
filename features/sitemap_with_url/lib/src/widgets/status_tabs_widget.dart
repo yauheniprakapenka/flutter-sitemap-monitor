@@ -10,7 +10,6 @@ class StatusTabsWidget extends StatefulWidget {
   final Function(int) onTabChanged;
 
   const StatusTabsWidget({
-    super.key,
     required this.urls,
     required this.selectedIndex,
     required this.onTabChanged,

@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 
-import 'shared/screens/welcome_screen.dart';
-import 'url_pages/screens/sitemap_home_screen.dart';
-import 'url_pages/screens/url_input_screen.dart';
+import 'package:sitemap_with_url/sitemap_with_url.dart';
+
+import 'widgets/welcome_screen.dart';
 
 void main() {
   runApp(const SitemapApp());
 }
 
 class SitemapApp extends StatelessWidget {
-  const SitemapApp({super.key});
+  const SitemapApp();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Sitemap Parser',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
       home: const WelcomeScreen(),
       routes: {
         '/sitemap': (context) {

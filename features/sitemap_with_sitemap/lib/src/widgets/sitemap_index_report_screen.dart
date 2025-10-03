@@ -3,18 +3,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../url_pages/models/sitemap_url.dart';
 import '../models/sitemap_index_report.dart';
+import '../models/sitemap_url.dart';
 
 class SitemapIndexReportScreen extends StatelessWidget {
   final SitemapIndexReport report;
 
-  const SitemapIndexReportScreen({super.key, required this.report});
+  const SitemapIndexReportScreen({required this.report});
 
   String _formatDate(DateTime date) {
     const months = [
-      'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+      'Январь',
+      'Февраль',
+      'Март',
+      'Апрель',
+      'Май',
+      'Июнь',
+      'Июль',
+      'Август',
+      'Сентябрь',
+      'Октябрь',
+      'Ноябрь',
+      'Декабрь'
     ];
     return '${months[date.month - 1]} ${date.year}';
   }
@@ -27,7 +37,12 @@ class SitemapIndexReportScreen extends StatelessWidget {
     final clientErrorCount = _getClientErrorCount();
     final serverErrorCount = _getServerErrorCount();
     final connectionErrorCount = _getConnectionErrorCount();
-    final otherCount = totalUrls - successCount - redirectCount - clientErrorCount - serverErrorCount - connectionErrorCount;
+    final otherCount = totalUrls -
+        successCount -
+        redirectCount -
+        clientErrorCount -
+        serverErrorCount -
+        connectionErrorCount;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,167 +68,179 @@ class SitemapIndexReportScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _TitleWidget(originalUrl: report.originalUrl),
-            const SizedBox(height: 24),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _TitleWidget(originalUrl: report.originalUrl),
+              const SizedBox(height: 24),
 
-            Text('Дата: ${_formatDate(report.generatedAt)}', style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 24),
+              Text('Дата: ${_formatDate(report.generatedAt)}',
+                  style: const TextStyle(fontSize: 16)),
+              const SizedBox(height: 24),
 
-            // Горизонтальный ряд с тремя блоками статистики
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Общая статистика
-                    SizedBox(
-                      width: 280,
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Общая статистика',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildStatRow('Sitemap файлов', report.totalSitemaps, Colors.blue),
-                              _buildStatRow('Успешных sitemap', report.successfulSitemaps, Colors.green),
-                              _buildStatRow('Ошибок sitemap', report.failedSitemaps, Colors.red),
-                              const Divider(),
-                              _buildStatRow('Всего страниц', totalUrls, Colors.blue),
-                              _buildStatRow('Успешные (2xx)', successCount, Colors.green),
-                              _buildStatRow('Перенаправления (3xx)', redirectCount, Colors.orange),
-                              _buildStatRow('Ошибки клиента (4xx)', clientErrorCount, Colors.red),
-                              _buildStatRow('Ошибки сервера (5xx)', serverErrorCount, Colors.red.shade800),
-                              _buildStatRow('Ошибки подключения', connectionErrorCount, Colors.purple),
-                              _buildStatRow('Остальное', otherCount, Colors.grey),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-
-                    // Процентное соотношение
-                    SizedBox(
-                      width: 360,
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Процентное соотношение',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(height: 8),
-                              if (totalUrls > 0) ...[
-                                _buildPercentageRow('Успешные', successCount, totalUrls, Colors.green),
-                                _buildPercentageRow('Перенаправления', redirectCount, totalUrls, Colors.orange),
-                                _buildPercentageRow('Ошибки клиента', clientErrorCount, totalUrls, Colors.red),
-                                _buildPercentageRow('Ошибки сервера', serverErrorCount, totalUrls, Colors.red.shade800),
-                                _buildPercentageRow('Ошибки подключения', connectionErrorCount, totalUrls, Colors.purple),
-                                _buildPercentageRow('Остальное', otherCount, totalUrls, Colors.grey),
+              // Горизонтальный ряд с тремя блоками статистики
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Общая статистика
+                      SizedBox(
+                        width: 280,
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Общая статистика',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                                const SizedBox(height: 8),
+                                _buildStatRow('Sitemap файлов', report.totalSitemaps, Colors.blue),
+                                _buildStatRow(
+                                    'Успешных sitemap', report.successfulSitemaps, Colors.green),
+                                _buildStatRow('Ошибок sitemap', report.failedSitemaps, Colors.red),
+                                const Divider(),
+                                _buildStatRow('Всего страниц', totalUrls, Colors.blue),
+                                _buildStatRow('Успешные (2xx)', successCount, Colors.green),
+                                _buildStatRow(
+                                    'Перенаправления (3xx)', redirectCount, Colors.orange),
+                                _buildStatRow('Ошибки клиента (4xx)', clientErrorCount, Colors.red),
+                                _buildStatRow(
+                                    'Ошибки сервера (5xx)', serverErrorCount, Colors.red.shade800),
+                                _buildStatRow(
+                                    'Ошибки подключения', connectionErrorCount, Colors.purple),
+                                _buildStatRow('Остальное', otherCount, Colors.grey),
                               ],
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
+                      const SizedBox(width: 8),
 
-                    // Детальная статистика по статус-кодам
-                    SizedBox(
-                      width: 280,
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Детальная статистика',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(height: 8),
-                              ..._buildDetailedStats(),
-                            ],
+                      // Процентное соотношение
+                      SizedBox(
+                        width: 360,
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Процентное соотношение',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                                const SizedBox(height: 8),
+                                if (totalUrls > 0) ...[
+                                  _buildPercentageRow(
+                                      'Успешные', successCount, totalUrls, Colors.green),
+                                  _buildPercentageRow(
+                                      'Перенаправления', redirectCount, totalUrls, Colors.orange),
+                                  _buildPercentageRow(
+                                      'Ошибки клиента', clientErrorCount, totalUrls, Colors.red),
+                                  _buildPercentageRow('Ошибки сервера', serverErrorCount, totalUrls,
+                                      Colors.red.shade800),
+                                  _buildPercentageRow('Ошибки подключения', connectionErrorCount,
+                                      totalUrls, Colors.purple),
+                                  _buildPercentageRow(
+                                      'Остальное', otherCount, totalUrls, Colors.grey),
+                                ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+
+                      // Детальная статистика по статус-кодам
+                      SizedBox(
+                        width: 280,
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Детальная статистика',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                                const SizedBox(height: 8),
+                                ..._buildDetailedStats(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
 
-            // Список ошибочных URL
-            if (clientErrorCount + serverErrorCount + connectionErrorCount > 0) ...[
+              // Список ошибочных URL
+              if (clientErrorCount + serverErrorCount + connectionErrorCount > 0) ...[
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Ошибочные URL',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            TextButton.icon(
+                              onPressed: () => _copyErrorUrlsToClipboard(context),
+                              icon: const Icon(Icons.copy, size: 14),
+                              label:
+                                  const Text('Копировать ссылки', style: TextStyle(fontSize: 12)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ..._buildErrorUrlsByCategory(context),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+
+              // Список sitemap файлов
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Ошибочные URL',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          TextButton.icon(
-                            onPressed: () => _copyErrorUrlsToClipboard(context),
-                            icon: const Icon(Icons.copy, size: 14),
-                            label: const Text('Копировать ссылки', style: TextStyle(fontSize: 12)),
-                          ),
-                        ],
+                      Text(
+                        'Детали по sitemap файлам',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 8),
-                      ..._buildErrorUrlsByCategory(context),
+                      ..._buildSitemapDetailsList(),
                     ],
                   ),
                 ),
               ),
             ],
-
-            // Список sitemap файлов
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Детали по sitemap файлам',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    ..._buildSitemapDetailsList(),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
         ),
       ),
     );
@@ -769,7 +796,8 @@ class SitemapIndexReportScreen extends StatelessWidget {
 
     Clipboard.setData(ClipboardData(text: buffer.toString()));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Скопировано $totalErrors ошибочных URL с группировкой по sitemap файлам')),
+      SnackBar(
+          content: Text('Скопировано $totalErrors ошибочных URL с группировкой по sitemap файлам')),
     );
   }
 
@@ -841,9 +869,9 @@ class _TitleWidget extends StatelessWidget {
               Text(
                 'Отчет по sitemap index',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
               ),
             ],
           ),
@@ -851,8 +879,8 @@ class _TitleWidget extends StatelessWidget {
           Text(
             originalUrl,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
-            ),
+                  color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
+                ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

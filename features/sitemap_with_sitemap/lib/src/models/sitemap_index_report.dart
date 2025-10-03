@@ -1,4 +1,4 @@
-import '../../url_pages/models/sitemap_url.dart';
+import 'sitemap_url.dart';
 
 class SitemapIndexReport {
   final String originalUrl;
@@ -28,19 +28,25 @@ class SitemapIndexReport {
   }
 
   int get successfulUrls {
-    return items.fold(0, (sum, item) =>
-      sum + item.pageUrls.where((url) =>
-        url.statusCode != null && url.statusCode! >= 200 && url.statusCode! < 300
-      ).length
-    );
+    return items.fold(
+        0,
+        (sum, item) =>
+            sum +
+            item.pageUrls
+                .where((url) =>
+                    url.statusCode != null && url.statusCode! >= 200 && url.statusCode! < 300)
+                .length);
   }
 
   int get errorUrls {
-    return items.fold(0, (sum, item) =>
-      sum + item.pageUrls.where((url) =>
-        url.statusCode != null && (url.statusCode! >= 400 || url.statusCode! >= 990)
-      ).length
-    );
+    return items.fold(
+        0,
+        (sum, item) =>
+            sum +
+            item.pageUrls
+                .where((url) =>
+                    url.statusCode != null && (url.statusCode! >= 400 || url.statusCode! >= 990))
+                .length);
   }
 }
 
@@ -58,14 +64,15 @@ class SitemapIndexReportItem {
   });
 
   int get successfulUrls {
-    return pageUrls.where((url) =>
-      url.statusCode != null && url.statusCode! >= 200 && url.statusCode! < 300
-    ).length;
+    return pageUrls
+        .where((url) => url.statusCode != null && url.statusCode! >= 200 && url.statusCode! < 300)
+        .length;
   }
 
   int get errorUrls {
-    return pageUrls.where((url) =>
-      url.statusCode != null && (url.statusCode! >= 400 || url.statusCode! >= 990)
-    ).length;
+    return pageUrls
+        .where(
+            (url) => url.statusCode != null && (url.statusCode! >= 400 || url.statusCode! >= 990))
+        .length;
   }
 }

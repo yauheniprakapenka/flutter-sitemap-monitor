@@ -5,14 +5,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class UrlInputScreen extends StatefulWidget {
-  const UrlInputScreen({super.key});
+import '../models/sitemap_index_result.dart';
+import '../services/sitemap_index_parser.dart';
+import 'sitemap_index_results_screen.dart';
+
+class SitemapIndexInputScreen extends StatefulWidget {
+  const SitemapIndexInputScreen();
 
   @override
-  State<UrlInputScreen> createState() => _UrlInputScreenState();
+  State<SitemapIndexInputScreen> createState() => _SitemapIndexInputScreenState();
 }
 
-class _UrlInputScreenState extends State<UrlInputScreen> {
+class _SitemapIndexInputScreenState extends State<SitemapIndexInputScreen> {
   final TextEditingController _urlController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -72,14 +76,24 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
 
       try {
         final url = _urlController.text.trim();
-        // Небольшая задержка для демонстрации состояния загрузки
-        await Future.delayed(const Duration(milliseconds: 500));
 
         if (mounted) {
-          unawaited(Navigator.of(context).pushReplacementNamed(
-            '/sitemap',
-            arguments: url,
-          ));
+          // Получаем и парсим sitemap index с данными страниц
+          final List<SitemapIndexResult> results = await SitemapIndexParser.parseSitemapIndexWithPages(url);
+
+          // Переходим на экран результатов
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => SitemapIndexResultsScreen(
+                results: results,
+                originalUrl: url,
+              ),
+            ),
+          );
+        }
+      } on Exception catch (e) {
+        if (mounted) {
+          _showSnackBar('Ошибка: $e');
         }
       } finally {
         if (mounted) {
@@ -95,7 +109,7 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sitemap Monitor'),
+        title: const Text('Sitemap Index Monitor'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Padding(
@@ -107,13 +121,13 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Icon(
-                Icons.map,
+                Icons.account_tree,
                 size: 80,
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 32),
               Text(
-                'Введите URL sitemap.xml',
+                'Введите URL sitemap index',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -121,7 +135,7 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Укажите URL, содержащий sitemap.xml для анализа',
+                'Укажите URL, содержащий sitemap index с вложенными sitemap файлами',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.grey.shade600,
                 ),
@@ -136,8 +150,8 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                       child: TextFormField(
                         controller: _urlController,
                         decoration: InputDecoration(
-                          labelText: 'URL sitemap.xml',
-                          hintText: 'https://example.com/sitemap.xml',
+                          labelText: 'URL sitemap index',
+                          hintText: 'https://example.com/sitemap_index.xml',
                           prefixIcon: const Icon(Icons.link),
                           border: const OutlineInputBorder(),
                           filled: true,
@@ -189,7 +203,7 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                         ),
                       )
                     : const Text(
-                        'Начать сканирование',
+                        'Начать анализ sitemap index',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                       ),
               ),
@@ -215,7 +229,7 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Примеры URL:',
+                          'Что такое sitemap index:',
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -224,9 +238,12 @@ class _UrlInputScreenState extends State<UrlInputScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '• https://example.com/sitemap.xml\n'
-                      '• https://site.com/sitemap_index.xml\n'
-                      '• https://blog.com/sitemap.xml\n\n'
+                      'Sitemap index — это XML файл, который содержит ссылки на другие sitemap файлы. '
+                      'Используется для организации больших сайтов с множеством страниц.\n\n'
+                      'Примеры URL:\n'
+                      '• https://example.com/sitemap_index.xml\n'
+                      '• https://site.com/sitemap.xml\n'
+                      '• https://blog.com/sitemap-index.xml\n\n'
                       '💡 Совет: Используйте кнопку вставки или длинное нажатие на поле',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade700,

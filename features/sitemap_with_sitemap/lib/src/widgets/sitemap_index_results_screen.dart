@@ -11,7 +11,6 @@ class SitemapIndexResultsScreen extends StatelessWidget {
   final String originalUrl;
 
   const SitemapIndexResultsScreen({
-    super.key,
     required this.results,
     required this.originalUrl,
   });

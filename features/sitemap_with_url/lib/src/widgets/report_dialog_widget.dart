@@ -9,7 +9,6 @@ class ReportDialogWidget extends StatelessWidget {
   final List<SitemapUrl> urls;
 
   const ReportDialogWidget({
-    super.key,
     required this.urls,
   });
 

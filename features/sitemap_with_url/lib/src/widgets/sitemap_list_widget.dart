@@ -8,7 +8,6 @@ class SitemapListWidget extends StatelessWidget {
   final bool isLoading;
 
   const SitemapListWidget({
-    super.key,
     required this.urls,
     this.isLoading = false,
   });

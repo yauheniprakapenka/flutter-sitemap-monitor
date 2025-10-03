@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import '../models/sitemap_url.dart';
 import '../services/sitemap_parser.dart';
 import '../services/url_filter.dart';
-import '../widgets/sitemap_list_widget.dart';
-import '../widgets/status_tabs_widget.dart';
 import 'report_screen.dart';
+import 'sitemap_list_widget.dart';
+import 'status_tabs_widget.dart';
 
 class SitemapHomeScreen extends StatefulWidget {
   final String sitemapUrl;
 
-  const SitemapHomeScreen({super.key, required this.sitemapUrl});
+  const SitemapHomeScreen({required this.sitemapUrl});
 
   @override
   State<SitemapHomeScreen> createState() => _SitemapHomeScreenState();

@@ -9,7 +9,7 @@ class ReportScreen extends StatelessWidget {
   final List<SitemapUrl> urls;
   final String sitemapUrl;
 
-  const ReportScreen({super.key, required this.urls, required this.sitemapUrl});
+  const ReportScreen({required this.urls, required this.sitemapUrl});
 
   String _formatDate(DateTime date) {
     const months = [
